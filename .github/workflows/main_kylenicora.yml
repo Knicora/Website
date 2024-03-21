@@ -39,23 +39,14 @@ jobs:
     needs: build
     environment:
       name: 'Production'
-      url: ${{ kylenicora.azurewebsites.net }}
-    permissions:
-      id-token: write #This is required for requesting the JWT
-
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v3
         with:
           name: .net-app
       
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_EFB9B462BAD44B6DBEA2B54C4B9C2250 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_5224F54E53E84F108B0772969F6DE469 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_32B8EDB8D0454BCC90BB4ED18D45F1A5 }}
-
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
@@ -63,4 +54,4 @@ jobs:
           app-name: 'KyleNicora'
           slot-name: 'Production'
           package: .
-          
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_63B3CEFD692A449A99D97407F806226F }}
